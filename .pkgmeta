@@ -1,0 +1,6 @@
+package-as: WTFisThisAddon
+ignore:
+  - .github
+  - .gitignore
+  - "*.md"
+  - LICENSE
