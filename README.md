@@ -124,6 +124,8 @@ Parent chain
 - `GetSourceLocation()` requires `enableSourceLocationLookup = 1` (auto-enabled on first use)
 - Font strings and textures report their *parent frame's* source location — WoW engine limitation
 - Some frames (e.g. HP bars) return secret values for width/height — safely handled, shown as 0
+- **Shows who *created* a frame, not who *modified* it** — if Addon B resizes or recolors a frame that Addon A created, only Addon A will appear. Post-creation modifications are invisible to the WoW API.
+- **Source data comes from Blizzard** — this addon reads location info provided by the WoW engine (`GetSourceLocation()`). If the result looks wrong, the engine data is the source of truth, not this addon.
 
 ---
 
