@@ -1,15 +1,6 @@
 package-as: WTFisThisAddon
 curse-project-id: 1494990
 
-externals:
-  libs/LibStub:
-    url: https://repos.wowace.com/wow/libs/libstub/trunk
-  libs/LibDataBroker-1.1:
-    url: https://github.com/tekkub/libdatabroker-1-1.git
-    branch: master
-  libs/LibDBIcon-1.0:
-    url: https://repos.wowace.com/wow/libs/libdbicon-1-0/trunk
-
 ignore:
   - .github
   - .gitignore
