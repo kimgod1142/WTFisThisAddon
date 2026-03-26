@@ -4,7 +4,7 @@
 ![License](https://img.shields.io/badge/License-MIT-green)
 ![Version](https://img.shields.io/badge/Version-1.1.0-orange)
 
-> **"What the hell is this UI from?"** — A developer/debug tool that instantly tells you which addon created any UI frame you hover over.
+> Hover over any UI element to find out which addon created it. No more guessing.
 
 ---
 
