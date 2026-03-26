@@ -2,29 +2,32 @@
 
 ![WoW Version](https://img.shields.io/badge/WoW-12.0%2B%20(Midnight)-blue)
 ![License](https://img.shields.io/badge/License-MIT-green)
-![Version](https://img.shields.io/badge/Version-1.0.0-orange)
+![Version](https://img.shields.io/badge/Version-1.1.0-orange)
 
 > **"What the hell is this UI from?"** — A developer/debug tool that instantly tells you which addon created any UI frame you hover over.
 
 ---
 
-## 📸 Screenshot
+## 📸 Screenshots
 
-<!-- Add screenshot here -->
-> *Toggle inspect mode → hover over any frame → instantly see which addon owns it*
+| | |
+|:---:|:---:|
+| ![AllTheThings detected with affecting addon](screenshots/simple-addon.png) | ![Details! Damage Meter highlighted](screenshots/simple-details.png) |
+| AllTheThings — with affecting addon info | Details! Damage Meter — full frame highlight |
+| ![TomTom coordinates frame](screenshots/simple-tomtom.png) | ![AlterEgo character panel](screenshots/simple-alterego.png) |
+| TomTom — coordinate display | AlterEgo — character info panel |
 
 ---
 
 ## ✨ Features
 
 - 🔍 **Instant identification** — hover over any UI element to see which addon created it
-- 🔷 **Blizzard UI detection** — correctly identifies native WoW frames
-- 📦 **Addon name + source file + line number** — pinpoint exactly where the frame was created
-- 🌲 **Parent chain analysis** — shows up to 6 levels of frame hierarchy
-- ⚙️ **Multi-addon detection** — reveals when multiple addons are involved in one UI area
+- 🔷 **Blizzard UI detection** — correctly identifies native WoW frames including `Blizzard_*` modules
+- ⚙️ **Affecting addons** — reveals when other addons are also involved in the same UI area
 - 🖼️ **Highlight overlay** — cyan border + subtle tint shows exactly which frame is selected
-- 📌 **Draggable minimap button** — position saved between sessions
-- ⚡ **Zero dependencies** — no external libraries required
+- 📌 **Minimap button** — integrated with LibDBIcon, works with minimap button managers
+- 🌐 **Localization** — Korean (koKR) and English (enUS) supported
+- 👁️ **Simple / Detail view** — clean one-line result by default, full debug info on demand
 
 ---
 
@@ -38,85 +41,126 @@
    ```
 3. Enable **WTFisThisAddon** in the AddOns list at the character select screen
 
-### CurseForge *(coming soon)*
+### CurseForge
+Search for **WTFisThisAddon** on [CurseForge](https://legacy.curseforge.com/wow/addons/wtfisthisaddon)
 
 ---
 
 ## 🚀 Usage
 
 ### First-time setup
-The first time you run `/wita`, the addon will enable a required console variable and ask you to reload:
+The first time you use the addon, it will enable a required console variable and ask you to reload:
 ```
-/wita
-→ "[WITA] SourceLocation 기능을 켰습니다."
-→ "[WITA] /reload 후 재시도해주세요."
+/wtf
+→ "[WITA] SourceLocation enabled."
+→ "[WITA] Please /reload and try again."
 
 /reload
 
-/wita  ← Now works!
+/wtf  ← Now works!
 ```
 > This only needs to be done **once**. The setting persists across sessions.
 
-### Controls
+---
 
-| Action | Result |
-|--------|--------|
-| `/wita` or `/wtfisthis` | Toggle inspect mode ON/OFF |
-| **Left-click** minimap button | Toggle inspect mode |
-| **Drag** minimap button | Reposition around the minimap |
+### Commands & Controls
 
-### Reading the popup
+| Input | When idle | When scanning |
+|-------|-----------|---------------|
+| `/wtf` or `/what` | Start scan (simple view) | Stop scan |
+| `/wtf detail` | Start scan (detail view) | No reaction |
+| **Click** minimap button | Start scan (simple view) | Stop scan |
+| **Shift+Click** minimap button | Start scan (detail view) | Stop scan |
+| **Drag** minimap button | Reposition around the minimap | — |
+
+---
+
+### Simple view (default)
+
+Shows just the essential info — who made this frame and who else is involved.
 
 ```
-⬡ WTF Is This?
-───────────────────────────────
-📦  WeakAuras
-  파일  WeakAuras\WeakAuras.lua
-  라인  2847
+🔷 기본 UI  (Blizzard_ChatFrame)
+   Frame  ChatFrame1
 
-프레임  WeakAuras_Anchor_MainGroup
-
-⚙  함께 관여 중인 애드온
-   •  ElvUI
-
-부모 체인
-  └ WeakAuras_Container (WeakAuras)
-    └ UIParent (Blizzard UI)
+⚙ Affecting addons
+   - ElvUI
 ```
 
-| Icon | Meaning |
-|------|---------|
-| 📦 | Third-party addon |
-| 🔷 | Blizzard default UI |
-| ❓ | Unknown (see Limitations) |
-| ⚙ | Other addons also involved |
+```
+📦 WeakAuras
+
+/wtf detail or Shift+Click to restart in detail view
+```
+
+---
+
+### Detail view
+
+Full debug information for developers.
+
+```
+📦 WeakAuras
+   File  WeakAuras\WeakAuras.lua
+   Line  2847
+
+Frame   WeakAuras_Anchor_MainGroup
+Size    320 x 24  Layer  MEDIUM / 5
+
+⚙ Involved addons
+   - ElvUI
+
+Parent chain
+  - WeakAuras_Container (WeakAuras)
+    - UIParent (Default UI)
+```
 
 ---
 
 ## ⚠️ Limitations
 
 - **~80–90% accuracy** — some frames can't be identified
-- Frames created via `loadstring()` or with no name may show as ❓ Unknown
-- `GetSourceLocation()` requires `enableSourceLocationLookup = 1` (auto-enabled on first use + /reload)
-- Font strings and textures created via Lua script report their *parent frame's* source location (WoW engine limitation)
+- Frames created via `loadstring()` or with no name may show as Unknown
+- `GetSourceLocation()` requires `enableSourceLocationLookup = 1` (auto-enabled on first use)
+- Font strings and textures report their *parent frame's* source location — WoW engine limitation
+- Some frames (e.g. HP bars) return secret values for width/height — safely handled, shown as 0
 
 ---
 
 ## 🔧 How It Works
 
-This addon uses WoW's `GetSourceLocation()` API (added in patch 9.2.5) to read the file path and line number where each frame was created. By parsing the path (e.g. `Interface\AddOns\WeakAuras\...`), it extracts the addon folder name. When `GetSourceLocation()` returns nothing useful, it falls back to guessing based on the frame's name prefix.
+Uses WoW's `GetSourceLocation()` API to read the file path and line number where each frame was created. By parsing the path (e.g. `Interface\AddOns\WeakAuras\...`), it extracts the addon folder name and maps it to the TOC title. Folders prefixed with `Blizzard_` are treated as built-in UI modules. When source info isn't available, it falls back to guessing from the frame name prefix.
 
-Key APIs used:
-- `GetMouseFoci()` — detects which frame is under the cursor (WoW 12.0+)
-- `ScriptRegion:GetSourceLocation()` — returns creation file + line
+**Key APIs:**
+- `GetMouseFoci()` — detects frames under the cursor (WoW 12.0+, replaces removed `GetMouseFocus`)
+- `ScriptRegion:GetSourceLocation()` — returns creation file + line number
 - `ScriptRegion:GetDebugName()` — fallback debug name
 - `Frame:GetParent()` — walks the parent hierarchy
+- `C_AddOns.GetAddOnInfo()` — maps folder names to TOC titles
+
+**Libraries:**
+- [LibDataBroker-1.1](https://github.com/tekkub/libdatabroker-1-1) — minimap button data object
+- [LibDBIcon-1.0](https://github.com/Stanzilla/LibDBIcon) — minimap button rendering & management
 
 ---
 
 ## 📋 Changelog
 
-See [CHANGELOG.md](CHANGELOG.md)
+### v1.1.0
+- **Commands** — `/wtf` / `/what` to toggle, `/wtf detail` for detail view
+- **Simple / Detail view** — clean default view with optional full debug info via Shift+Click or `/wtf detail`
+- **Minimap button** — integrated with LibDBIcon; now works with minimap button managers (Minimap Button Bag, etc.)
+- **Blizzard_ detection** — `Blizzard_*` addon folders now correctly identified as Default UI
+- **Affecting addons** — shown in simple view for all frame types
+- **Localization** — Korean (koKR) and English (enUS)
+- **Bug fix** — secret number values from HP bars no longer cause Lua errors
+
+### v1.0.1
+- **Bug fix** — replaced removed `GetMouseFocus()` with `GetMouseFoci()[1]` (WoW 12.0+)
+- **Bug fix** — Mac path separator (`/`) now normalized to `\` for correct addon detection
+
+### v1.0.0
+- Initial release
 
 ---
 

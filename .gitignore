@@ -3,3 +3,6 @@
 
 # WoW backup files
 *.bak
+
+# 로컬 전용 개발 일지
+DEVLOG.md

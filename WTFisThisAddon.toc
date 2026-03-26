@@ -1,11 +1,16 @@
 ## Interface: 120001
 ## Title: |cff00ffffWTF|r is this Addon?
 ## Notes: UI 프레임 위에 마우스를 올려 어떤 애드온이 만든 UI인지 알아보는 검사 도구
-## Version: 1.0.0
+## Version: 1.1.0
 ## Author: kimgod1142
 ## X-Website: https://github.com/kimgod1142/WTFisThisAddon
 ## X-License: MIT
 ## X-Category: Development Tools
+## IconTexture: Interface\Icons\Spell_Holy_MindVision
 ## SavedVariables: WITAdb
 
+libs\LibStub\LibStub.lua
+libs\LibDataBroker-1.1\LibDataBroker-1.1.lua
+libs\LibDBIcon-1.0\LibDBIcon-1.0.lua
+Locales.lua
 WTFisThisAddon.lua
